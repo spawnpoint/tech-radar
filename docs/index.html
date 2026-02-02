@@ -16,13 +16,113 @@
 
 <body>
 
+<div id="filter-container">
+  <div id="filter-header">
+    <span id="filter-label">Filter by tags:</span>
+    <button id="clear-filters" style="display: none;">Clear all</button>
+    <span id="filter-count"></span>
+  </div>
+  <div id="tag-filters"></div>
+</div>
+
 <svg id="radar"></svg>
 
 <script>
+let radarConfig = null;
+let selectedTags = new Set();
+let allTags = [];
+
+function initTagFilters(data) {
+  // Collect all unique tags from entries, or use predefined tags
+  const tagSet = new Set();
+  if (data.tags && Array.isArray(data.tags)) {
+    data.tags.forEach(tag => tagSet.add(tag));
+  }
+  data.entries.forEach(entry => {
+    if (entry.tags && Array.isArray(entry.tags)) {
+      entry.tags.forEach(tag => tagSet.add(tag));
+    }
+  });
+  allTags = Array.from(tagSet).sort();
+  
+  // Render tag buttons
+  const container = document.getElementById('tag-filters');
+  container.innerHTML = '';
+  
+  allTags.forEach(tag => {
+    const btn = document.createElement('button');
+    btn.className = 'tag-btn';
+    btn.textContent = tag;
+    btn.dataset.tag = tag;
+    btn.addEventListener('click', () => toggleTag(tag, btn));
+    container.appendChild(btn);
+  });
+  
+  // Clear filters button
+  document.getElementById('clear-filters').addEventListener('click', clearFilters);
+}
+
+function toggleTag(tag, btn) {
+  if (selectedTags.has(tag)) {
+    selectedTags.delete(tag);
+    btn.classList.remove('active');
+  } else {
+    selectedTags.add(tag);
+    btn.classList.add('active');
+  }
+  applyFilters();
+}
+
+function clearFilters() {
+  selectedTags.clear();
+  document.querySelectorAll('.tag-btn.active').forEach(btn => btn.classList.remove('active'));
+  applyFilters();
+}
+
+function applyFilters() {
+  const clearBtn = document.getElementById('clear-filters');
+  const countEl = document.getElementById('filter-count');
+  
+  if (selectedTags.size === 0) {
+    clearBtn.style.display = 'none';
+    countEl.textContent = '';
+    // Show all entries
+    d3.selectAll('.blip').style('opacity', 1);
+    d3.selectAll('[class^="legend"]').style('opacity', 1);
+    return;
+  }
+  
+  clearBtn.style.display = 'inline-block';
+  
+  // Filter entries - entry must have ALL selected tags (AND logic)
+  let matchCount = 0;
+  radarConfig.entries.forEach(entry => {
+    const entryTags = entry.tags || [];
+    const matches = Array.from(selectedTags).every(tag => entryTags.includes(tag));
+    entry.filtered = !matches;
+    if (matches) matchCount++;
+  });
+  
+  countEl.textContent = `${matchCount} of ${radarConfig.entries.length} entries`;
+  
+  // Update visual opacity of blips and legend items
+  d3.selectAll('.blip').each(function(d) {
+    d3.select(this).style('opacity', d.filtered ? 0.15 : 1);
+  });
+  
+  // Update legend items
+  radarConfig.entries.forEach(entry => {
+    const legendItem = document.getElementById('legendItem' + entry.id);
+    if (legendItem) {
+      legendItem.style.opacity = entry.filtered ? 0.15 : 1;
+    }
+  });
+}
+
 fetch('./config.json').then(function(response) {
   return response.json();
 }).then(function(data) {
-  radar_visualization({
+  radarConfig = {
     repo_url: "https://github.com/zalando/tech-radar",
     title: "Zalando Tech Radar",
     date: data.date,
@@ -39,7 +139,10 @@ fetch('./config.json').then(function(response) {
       { name: "HOLD", color: "#e09b96" }
     ],
     entries: data.entries
-  });
+  };
+  
+  initTagFilters(data);
+  radar_visualization(radarConfig);
 }).catch(function(err) {
   console.log('Error loading config.json', err);
 });
