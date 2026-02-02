@@ -16,7 +16,9 @@
     "socket.io": "^4.7.2"
   },
   "scripts": {
-    "start": "browser-sync docs -w",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "npm run lint:js && npm run lint:html",
     "lint:js": "eslint docs/*.js",
     "lint:html": "eslint docs/*.html"
