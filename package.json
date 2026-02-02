@@ -16,9 +16,18 @@
     "socket.io": "^4.7.2"
   },
   "scripts": {
-    "start": "browser-sync docs -w",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "npm run lint:js && npm run lint:html",
     "lint:js": "eslint docs/*.js",
     "lint:html": "eslint docs/*.html"
+  },
+  "dependencies": {
+    "d3": "^7.9.0",
+    "lucide-react": "^0.563.0",
+    "next": "^16.1.6",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
   }
 }

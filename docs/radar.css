@@ -2,6 +2,83 @@ body {
   font-family: 'Source Sans Pro', arial, helvetica, sans-serif;
   padding-bottom: 50px;
 }
+
+/* Tag Filter Styles */
+#filter-container {
+  max-width: 1400px;
+  margin: 20px 50px;
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+#filter-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+#filter-label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #495057;
+}
+
+#filter-count {
+  font-size: 13px;
+  color: #6c757d;
+  margin-left: auto;
+}
+
+#clear-filters {
+  padding: 4px 12px;
+  font-size: 12px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#clear-filters:hover {
+  background: #c82333;
+}
+
+#tag-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-btn {
+  padding: 6px 14px;
+  font-size: 13px;
+  background: white;
+  color: #495057;
+  border: 1px solid #dee2e6;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tag-btn:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.tag-btn.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.tag-btn.active:hover {
+  background: #0056b3;
+  border-color: #0056b3;
+}
 h3 {
   margin-top: 50px;
 }
